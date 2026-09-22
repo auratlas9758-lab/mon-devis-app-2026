@@ -10,7 +10,8 @@ interface LineItem {
   unitPrice: number;
 }
 
-export default function Home() {
+export default function Home() { const [userEmail, setUserEmail] = useState('');
+  const [isBlocked, setIsBlocked] = useState(false);
   const [companyName, setCompanyName] = useState('Mon Entreprise SAS');
   const [companyAddress, setCompanyNameAddress] = useState('123 rue de Paris, 75001 Paris');
   
@@ -37,6 +38,17 @@ export default function Home() {
       return;
     }
 
+    if (!userEmail) {
+      alert("Veuillez entrer votre e-mail pour générer votre devis gratuit.");
+      return;
+    }
+
+    const usedEmail = localStorage.getItem('free_quote_email');
+    if (usedEmail === userEmail) {
+      alert("Vous avez déjà utilisé votre devis gratuit avec cet e-mail !");
+      setIsBlocked(true);
+      return;
+    }  
     setIsAiLoading(true);
 
     setTimeout(() => {
@@ -61,6 +73,7 @@ export default function Home() {
 
       setIsAiLoading(false);
       setAiPrompt('');
+localStorage.setItem('free_quote_email', userEmail);
     }, 800);
   };
 
@@ -138,6 +151,13 @@ export default function Home() {
               placeholder="Décrivez votre prestation en quelques mots..."
               className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500"
             />
+         <input
+        type="email"
+        placeholder="Entrez votre e-mail pour votre devis gratuit"
+        value={userEmail}
+        onChange={(e) => setUserEmail(e.target.value)}
+        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none mb-3"
+      />  
             <button
               type="button"
               onClick={handleAiGenerate}
